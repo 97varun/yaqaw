@@ -82,21 +82,35 @@ def add_answer():
 	question = request.json['question']
 	answer = request.json['answer']
 	try :
-		posts.update({'question': question}, {'$push' : {'answers' : answer}}, upsert = True)
+		z = json_encoder.encode({'answer':answer})
+		posts.update({'question': question}, {'$push' : {'answers' : [answer,[''],['']]}}, upsert=True)
 		return json_encoder.encode({"message":"Success"})
 	except :
 		return json_encoder.encode({"message":"Failure in add_answer"})
 
 @app.route('/vote', methods = ['POST'])
-def upvote():
-	question = request.json['question']
+def vote():
+	answer = request.json['answer']
 	username = request.json['username']
 	type_vote = request.json['vote']
-	id_q = request.json['id']
-	posts.update({'_id' : id_q}, {"$addToSet" : {type_vote : username}}, upsert=True)	
+	# question = request.json['question'] 'question' : question 
+	id_q = request.json['id'] 
 	x = posts.find_one({'_id' : id_q})
-	return json_encoder.encode({type_vote : len(x[type_vote])})		
-
+	idx = 0
+	for i in x['answers']:	
+		if(i[0] == answer):
+			y = i
+			break
+		else:
+			idx += 1	
+	if(type_vote == 'upvote'):
+		if username not in y[1]:
+			y[1].append(username)
+	else:
+		if username not in y[2]:
+			y[2].append(username)
+	posts.update({'_id' : id_q}, {"$set" : {'answers.'+str(idx) : y}}, upsert=True)	
+	return json_encoder.encode({'upvote' : len(y[1])-1, 'downvote' : len(y[2])-1})		
 
 @app.route('/getquestions', methods = ['GET'])
 def	getquestions():
