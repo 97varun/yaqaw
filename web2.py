@@ -4,7 +4,7 @@ import json
 import pickle
 from flask_cors import CORS
 import pymongo
-import pprint
+from pprint import pprint
 import hashlib
 app = Flask(__name__)
 json_decoder = json.JSONDecoder()
@@ -36,15 +36,6 @@ def login():
 			return json_encoder.encode({"message":"Failure", "comment":"Username and password doesn't match"})
 	else:
 		return json_encoder.encode({"message":"Failure", "comment":"User not registered"})	
-
-	# if(USERTABLE.find({'username' : username}).count()):
-	# 	if(USERTABLE.find({"username" : username, "password": hashlib.md5(password)}).count()):
-	# 		global session 
-	# 		session['username'] = username
-	# 		return json_encoder.encode({"message":"Success", "comment":"Username and password match"})
-	# 	return json_encoder.encode({"message":"Failure", "comment":"Username and password doesn't match"})	
-	# else:
-	# 	return json_encoder.encode({"message":"Failure", "comment":"User not registered"})
 
 @app.route('/register', methods = ['POST'])
 def add_user():
@@ -79,6 +70,26 @@ def add_question():
 			return json_encoder.encode({"status":"failed"})
 	else:
 		return json_encoder.encode({"error":"need to be logged in"})
+
+@app.route('/addanswer', methods = ['POST'])
+def add_answer():
+	question = request.json['question']
+	answer = request.json['answer']
+	try :
+		posts.update({'question': question}, {'$push' : {'answers' : answer}}, upsert = True)
+		return json_encoder.encode({"message":"Success"})
+	except :
+		return json_encoder.encode({"message":"Failure in add_answer"})
+
+@app.route('/vote', methods = ['POST'])
+def upvote():
+	question = request.json['question']
+	username = request.json['username']
+	type_vote = request.json['vote']
+	id_q = request.json['id']
+	posts.update({'_id' : id_q}, {"$addToSet" : {type_vote : username}}, upsert=True)	
+	x = posts.find_one({'_id' : id_q})
+	return json_encoder.encode({type_vote : len(x[type_vote])})		
 
 
 @app.route('/getquestions', methods = ['GET'])
