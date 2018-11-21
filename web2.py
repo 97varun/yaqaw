@@ -125,6 +125,16 @@ def	getquestions():
 		return JSONEncoder().encode(docarr)
 	else:
 		return json_encoder.encode({"error":"need to be logged in"})
+@app.route('/search', methods = ['POST'])
+def search_query():
+	query = request.json['query']
+	results = posts.find({'$text': {'$search': query}}, {'score': {'$meta': 'textScore'}})
+	print(results)
+	docarr=[]
+	for i in results:
+		docarr.append(i)
+	return JSONEncoder().encode(docarr)
+	
 
 
 
