@@ -19,7 +19,7 @@ session = {'username' : ''}
 
 @app.route('/')
 def hello():
-   return 
+   return "smd"
 
 @app.route('/login', methods = ['POST'])
 def login():
@@ -68,18 +68,30 @@ def get_info():
 def add_question():
 	question = request.json['question']
 	global session
-	username=session['username']
-	result = posts.update({"question":question},{"$set":{"username":username}},upsert=True)
-	return json_encoder.encode(result);
+	session['username']="abc"
+	if(session['username']):	
+		username=session['username']
+
+		result = posts.insert({"question":question,"username":username})
+		if(result):
+			return json_encoder.encode({"status":"success"})
+		else:
+			return json_encoder.encode({"status":"failed"})
+	else:
+		return json_encoder.encode({"error":"need to be logged in"})
 
 
-@app.route('/getinfo', methods = ['GET'])
+@app.route('/getquestions', methods = ['GET'])
+def	getquestions():
 	global session
-
 	username = session['username']
+	username="abc"
 	if(username):
-		posts =posts.find({"username":username})
-	
+		doc =list(posts.find({"username":username}))
+		print(doc)
+		return json_encoder.encode({"posts":doc})
+	else:
+		return json_encoder.encode({"error":"need to be logged in"})
 
 
 
