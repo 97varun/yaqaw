@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,jsonify
 from flask import request
 import json
 import pickle
@@ -6,6 +6,7 @@ from flask_cors import CORS
 import pymongo
 import pprint
 import hashlib
+from bson import ObjectId
 app = Flask(__name__)
 json_decoder = json.JSONDecoder()
 json_encoder = json.JSONEncoder()
@@ -16,6 +17,11 @@ posts = mydb["posts"]
 QanA = mydb['QandA']
 
 session = {'username' : ''}
+class JSONEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, ObjectId):
+            return str(o)
+        return json.JSONEncoder.default(self, o)
 
 @app.route('/')
 def hello():
@@ -88,8 +94,10 @@ def	getquestions():
 	username="abc"
 	if(username):
 		doc =list(posts.find({"username":username}))
-		print(doc)
-		return json_encoder.encode({"posts":doc})
+		docarr=[]
+		for i in doc :
+			docarr.append(i)
+		return JSONEncoder().encode(docarr)
 	else:
 		return json_encoder.encode({"error":"need to be logged in"})
 
