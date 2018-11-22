@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="qaApp">
 <head>
     <!--Import Google Icon Font-->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -12,54 +12,24 @@
 
     <!-- jquery -->
     <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="js/angular.min.js"></script>
 
-    <script>
-        $(document).ready(function() {
-            // profile dropdown
-            options = {
-                alignment: 'right',
-                constrainWidth: false,
-                coverTrigger: false
-            }
-            $('.dropdown-trigger').dropdown(options);
-            $('.tabs').tabs();
-        });
-    </script>
+    <script type="text/javascript" src="app.js"></script>
+
+    <link type="text/css" rel="stylesheet" href="style.css"/>
 
     <style>
-        .tabs .indicator {
-            background-color: white;
-        }
-        .brand-logo {
-            padding-left: 1% !important;
-        }
-        #search-bar {
-            width: 40%; 
-            margin-left: 30%;
-        }
-        #prof-pic {
-            max-height: 150px;
-        }
-        h4 {
-            margin-top: 0;
-        }
-        .qa-count {
-            padding: 0;
-        }
-        .tabs {
-            margin-top: 1%;
-        }
-        .qa-info {
-            padding: 1%;
+        .row .answer-row {
+            margin: 0 !important;
         }
     </style>
 </head>
-<body class="layout-dark">
+<body class="layout-dark" ng-controller="MainController">
     <!-- nav bar -->
-    <div class="navbar-fixed">
+    <div class="navbar-fixed" ng-controller="SearchController">
         <nav>
             <div class="nav-wrapper blue-grey darken-4">
-                <a href="#" class="brand-logo">Quora</a>
+                <a href="question.html" class="brand-logo">Quora</a>
                 <ul class="right">
                     <li>
                         <a class="waves-effect waves-light btn-flat dropdown-trigger" data-target="menu-dropdown">
@@ -67,8 +37,8 @@
                         </a>
                     </li>
                 </ul>
-                <div id="search-bar" contenteditable="true" class="blue-grey darken-2 btn-flat white-text">
-                    Search
+                <div class="input-field">
+                    <input type="text" id="search-bar" class="blue-grey darken-2 white-text autocomplete" placeholder="Search">
                 </div>
             </div>
         </nav>
@@ -80,29 +50,24 @@
     </ul>
 
     <!-- profile info -->
-    <div class="row">
+    <div class="row" ng-controller="ProfController">
         <div id="profile-info" class="col s3">
             <div class="card">
                     <div class="card-img center">
                         <img id="prof-pic" src="img/avatar-7.png" alt="prof-pic" class="responsive-img">
                     </div>
                 <div class="card-content">
-                    <h4>Roger Waters</h4>
-                    <p>
-                        About Me!
-                        I am a very simple card. 
-                        I am good at containing small bits of information. 
-                        I am convenient because I require little markup to use effectively.
-                    </p>
+                    <h4 class="center-align">{{this.profInfo.username}}</h4>
+                    <p>{{this.profInfo.about}}</p>
                 </div>
             </div>
             <div class="card-panel qa-info">
                 <div class="row">
                     <div class="col s6 center-align qa-count">
-                        <h5>6</h5><p>Questions</p>
+                        <h5>{{this.posts.length}}</h5><p>Questions</p>
                     </div>
                     <div class="col s6 center-align qa-count">
-                            <h5>5</h5><p>Answers</p>
+                            <h5>{{this.answeredPosts.length}}</h5><p>Answers</p>
                         </div>
                     <p></p>
                 </div>
@@ -110,18 +75,53 @@
         </div>
         <div class="col s9">
             <ul class="tabs z-depth-1 blue-grey darken-4">
-                <li class="tab col s6"><a href="#test1" class="active white-text">My Questions</a></li>
-                <li class="tab col s6"><a class="white-text" href="#test2">My Answers</a></li>
+                <li class="tab col s6"><a href="" class="active white-text" ng-click="this.switchToQuestionView()">My Questions</a></li>
+                <li class="tab col s6"><a href="" class="white-text" ng-click="this.switchToAnswerView()">My Answers</a></li>
             </ul>
-            <div class="card">
-                <div class="card-content">
-                    <span class="card-title">Question</span>
-                    <p>I am a very simple card. I am good at containing small bits of information.
-                    I am convenient because I require little markup to use effectively.</p>
-                </div>
-                <div class="card-action">
-                    <a href="#"><i class="material-icons green-text waves-effect waves-green">thumb_up</i></a>
-                    <a href="#"><i class="material-icons red-text waves-effect waves-red">thumb_down</i></a>
+            <div class="row" ng-repeat="post in this.getPosts()">
+                <div class="col s12 m12">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">{{post.question}}</span>
+                            <p>{{post.username}}</p>
+                        </div>
+                        <div class="row answer-row" ng-repeat="answer in post.answers" ng-show="post.showAnswers">
+                            <div class="col s12 m12">
+                                <div class="card transparent">
+                                    <div class="card-content">
+                                        <span class="card-title">{{answer}}</span>
+                                        <p>answerer</p>
+                                    </div>
+                                    <div class="card-action">
+                                        <span style="vertical-align: bottom;">6</span>
+                                        <a href=""><i class="material-icons green-text waves-effect waves-green">thumb_up</i></a>
+                                        <span style="vertical-align: bottom;">5</span>
+                                        <a href=""><i class="material-icons red-text waves-effect waves-red">thumb_down</i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row answer-row" ng-show="post.answering">
+                            <div class="col s12">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <div class="input-field">
+                                            <textarea ng-model='post.userAnswer' id="answer-field" class="materialize-textarea"></textarea>
+                                            <label for="answer-field">Answer</label>
+                                        </div>
+                                    </div>
+                                    <div class="card-action">
+                                        <a href="" class="teal-text btn-flat waves-effect" ng-click="openClose(post)">Cancel</a>
+                                        <a href="" class="teal-text btn-flat waves-effect" ng-click="answerQuestion(post)">Submit</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-action" ng-show='!post.answering'>
+                            <a href="" class="teal-text btn-flat waves-effect" ng-click="switchView(post)">{{post.showBtnText}}</a>
+                            <a href="" class="teal-text btn-flat waves-effect" ng-click="openClose(post)">Answer</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
