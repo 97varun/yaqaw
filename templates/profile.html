@@ -38,7 +38,7 @@
                     </li>
                 </ul>
                 <div class="input-field">
-                    <input type="text" id="search-bar" class="blue-grey darken-2 white-text autocomplete" placeholder="Search">
+                    <input ng-model="this.query" ng-change="this.getQuery()" type="text" id="search-bar" class="blue-grey darken-2 white-text autocomplete" placeholder="Search">
                 </div>
             </div>
         </nav>

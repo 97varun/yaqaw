@@ -141,6 +141,18 @@ qaApp.controller('ProfController', function ProfController($scope) {
     }
 });
 
+// submission throttling
 qaApp.controller('SearchController', function SearchControlelr($scope) {
+    $scope.timer = null;
     $scope.query = '';
+    $scope.getQuery = function() {
+        if ($scope.timer) {
+            clearTimeout($scope.timer);
+        }
+        $scope.timer = setTimeout($scope.sendQuery, 1000);
+    }
+    $scope.sendQuery = function() {
+        console.log($scope.query);
+        $http.get();
+    }
 });
