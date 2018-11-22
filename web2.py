@@ -12,6 +12,7 @@ json_decoder = json.JSONDecoder()
 json_encoder = json.JSONEncoder()
 my_client = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = my_client["webdb"]
+# my_client.drop_database('webdb')
 USERTABLE = mydb["USERTABLE"]
 posts = mydb["posts"]
 QanA = mydb['QandA']
@@ -47,25 +48,29 @@ def login():
 def add_user():
 	username = request.json['username']
 	password = request.json['password']
-	obj = {'username' : username, 'password' : hashlib.md5(password.encode()).hexdigest()}
+	about = request.json['about']
+	obj = {'username' : username, 'password' : hashlib.md5(password.encode()).hexdigest(), "about" : about}
 	USERTABLE.insert_one(obj)
 	return json_encoder.encode({"message":"Success"})
-@app.route('/getinfo', methods = ['GET'])
+
+@app.route('/getinfo', methods = ['POST'])
 def get_info():
-	username = request.args.get('username');
+	username = session['username'];
+	username = 'gb'
 	x = USERTABLE.find_one({'username':username})
+	about = x['about']
 	print(x)
 	try :
-		return json_encoder.encode({"q_num":len(x['questions']),"a_num":len(x['answers'])})
+		return json_encoder.encode({"username" : username,"about": about})
 	except :
-		return json_encoder.encode({"q_num":0,"a_num":0})
+		return json_encoder.encode({"username" : username,"about": about})
 
 
 @app.route('/addquestion', methods = ['POST'])		
 def add_question():
 	question = request.json['question']
 	global session
-	session['username']="abc"
+	# session['username']="abc"
 	if(session['username']):	
 		username=session['username']
 
@@ -83,7 +88,7 @@ def add_answer():
 	answer = request.json['answer']
 	try :
 		z = json_encoder.encode({'answer':answer})
-		posts.update({'question': question}, {'$push' : {'answers' : [answer,[''],['']]}}, upsert=True)
+		posts.update({'question': question}, {'$push' : {'answers' : [answer,[''],[''],session['username']]}}, upsert=True)
 		return json_encoder.encode({"message":"Success"})
 	except :
 		return json_encoder.encode({"message":"Failure in add_answer"})
@@ -93,7 +98,7 @@ def vote():
 	answer = request.json['answer']
 	username = request.json['username']
 	type_vote = request.json['vote']
-	# question = request.json['question'] 'question' : question 
+	# question = request.json['question']  'question' : question 
 	id_q = request.json['id'] 
 	x = posts.find_one({'_id' : id_q})
 	idx = 0
@@ -116,7 +121,7 @@ def vote():
 def	getquestions():
 	global session
 	username = session['username']
-	username="abc"
+	username="gb"
 	if(username):
 		doc =list(posts.find({"username":username}))
 		docarr=[]
@@ -125,6 +130,38 @@ def	getquestions():
 		return JSONEncoder().encode(docarr)
 	else:
 		return json_encoder.encode({"error":"need to be logged in"})
+
+@app.route('/getanswers', methods = ['GET'])
+def	get_answers():
+	global session
+	username = session['username']
+	username="abc"
+	if(username):
+		docs =list(posts.find())
+		docarr=[]
+
+		for doc in docs:
+			ans = list(filter(lambda x: x[3] == username, doc['answers']))
+			if len(ans):
+				doc['answers'] = ans
+				docarr.append(doc)
+				
+
+		# for i in doc :
+		# 	# print(i)
+
+		# 	for j in i['answers']:
+		# 		if(j[3] != username):
+		# 			docarr1.append(j)
+		# 	if(len(docarr1)):
+		# 		docarr.append([i['question'], docarr1])
+
+		return JSONEncoder().encode(docarr)
+	else:
+		return json_encoder.encode({"error":"need to be logged in"})
+
+
+
 @app.route('/search', methods = ['POST'])
 def search_query():
 	query = request.json['query']
