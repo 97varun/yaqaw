@@ -1,5 +1,5 @@
-from flask import Flask,jsonify
-from flask import request
+from flask import Flask, jsonify
+from flask import request, render_template
 import json
 import pickle
 from flask_cors import CORS
@@ -24,15 +24,19 @@ class JSONEncoder(json.JSONEncoder):
             return str(o)
         return json.JSONEncoder.default(self, o)
 
-@app.route('/')
-def hello():
-   return "smd"
+@app.route('/questions', methods=['GET'])
+def questions():
+   	return render_template('question.html')
+
+@app.route('/profile', methods=['GET'])
+def profile():
+	return render_template('profile.html')
 
 @app.route('/login', methods = ['POST'])
 def login():
 	username = request.json['username']
 	password = request.json['password']
-	doc = USERTABLE.find_one({'username' : username});
+	doc = USERTABLE.find_one({'username' : username})
 	print(doc)
 	if(doc):
 		if(doc['password'] == hashlib.md5(password.encode()).hexdigest()):
