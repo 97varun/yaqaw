@@ -19,6 +19,7 @@ $(document).ready(function() {
         }
     }
     $('input.autocomplete').autocomplete(autocompleteOptions);
+    $('.modal').modal();
 });
 
 // angular app
@@ -59,6 +60,34 @@ qaApp.controller('MainController', function MainController($scope) {
         } else {
             post.answering = true;
         }
+    }
+
+    $scope.query = '';
+    $scope.addQuestion = function() {
+        // http post
+        console.log('addQuestion: ', $scope.query);
+    }
+    $scope.cancel = function() {
+        var m = $('.modal');
+        m.modal('close');
+    }
+    
+    // submission throttling
+    $scope.timer = null;
+    $scope.getQuery = function() {
+        if ($scope.timer) {
+            clearTimeout($scope.timer);
+        }
+        $scope.timer = setTimeout($scope.sendQuery, 1000);
+    }
+    $scope.sendQuery = function() {
+        console.log('sendQuery:', $scope.query);
+        // $http.get();
+    }
+    $scope.askQuestion = function() {
+        var m = $('.modal');
+        m.modal('open');
+        M.updateTextFields();
     }
 });
 
@@ -138,21 +167,5 @@ qaApp.controller('ProfController', function ProfController($scope) {
         } else {
             return $scope.answeredPosts;
         }
-    }
-});
-
-// submission throttling
-qaApp.controller('SearchController', function SearchControlelr($scope) {
-    $scope.timer = null;
-    $scope.query = '';
-    $scope.getQuery = function() {
-        if ($scope.timer) {
-            clearTimeout($scope.timer);
-        }
-        $scope.timer = setTimeout($scope.sendQuery, 1000);
-    }
-    $scope.sendQuery = function() {
-        console.log($scope.query);
-        $http.get();
     }
 });

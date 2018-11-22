@@ -5,18 +5,18 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
     <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="css/materialize.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="../static/materialize.css"  media="screen,projection"/>
 
     <!--Let browser know website is optimized for mobile-->
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
     <!-- jquery -->
-    <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="js/angular.min.js"></script>
+    <script type="text/javascript" src="../static/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../static/angular.min.js"></script>
 
-    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="../static/app.js"></script>
 
-    <link type="text/css" rel="stylesheet" href="style.css"/>
+    <link type="text/css" rel="stylesheet" href="../static/style.css"/>
 
     <style>
         .row .answer-row {
@@ -26,10 +26,10 @@
 </head>
 <body class="layout-dark" ng-controller="MainController">
     <!-- nav bar -->
-    <div class="navbar-fixed" ng-controller="SearchController">
+    <div class="navbar-fixed">
         <nav>
             <div class="nav-wrapper blue-grey darken-4">
-                <a href="question.html" class="brand-logo">Quora</a>
+                <a href="/questions" class="brand-logo">Quora</a>
                 <ul class="right">
                     <li>
                         <a class="waves-effect waves-light btn-flat dropdown-trigger" data-target="menu-dropdown">
@@ -38,7 +38,7 @@
                     </li>
                 </ul>
                 <div class="input-field">
-                    <input ng-model="this.query" ng-change="this.getQuery()" type="text" id="search-bar" class="blue-grey darken-2 white-text autocomplete" placeholder="Search">
+                    <input ng-model="this.query" ng-change="this.getQuery()" ng-keyup="$event.keyCode == 13 && this.askQuestion()" type="text" id="search-bar" class="blue-grey darken-2 white-text autocomplete" placeholder="Search">
                 </div>
             </div>
         </nav>
@@ -46,7 +46,7 @@
 
     <!-- dropdown menu -->
     <ul id='menu-dropdown' class='dropdown-content'>
-        <li><a href="#!">Logout</a></li>
+        <li><a href="">Logout</a></li>
     </ul>
 
     <!-- profile info -->
@@ -54,20 +54,20 @@
         <div id="profile-info" class="col s3">
             <div class="card">
                     <div class="card-img center">
-                        <img id="prof-pic" src="img/avatar-7.png" alt="prof-pic" class="responsive-img">
+                        <img id="prof-pic" src="../static/avatar-7.png" alt="prof-pic" class="responsive-img">
                     </div>
                 <div class="card-content">
-                    <h4 class="center-align">{{this.profInfo.username}}</h4>
-                    <p>{{this.profInfo.about}}</p>
+                    <h4 class="center-align" ng-bind="this.profInfo.username"></h4>
+                    <p ng-bind="this.profInfo.about"></p>
                 </div>
             </div>
             <div class="card-panel qa-info">
                 <div class="row">
                     <div class="col s6 center-align qa-count">
-                        <h5>{{this.posts.length}}</h5><p>Questions</p>
+                        <h5 ng-bind="this.posts.length"></h5><p>Questions</p>
                     </div>
                     <div class="col s6 center-align qa-count">
-                            <h5>{{this.answeredPosts.length}}</h5><p>Answers</p>
+                            <h5 ng-bind="this.answeredPosts.length"></h5><p>Answers</p>
                         </div>
                     <p></p>
                 </div>
@@ -82,14 +82,14 @@
                 <div class="col s12 m12">
                     <div class="card">
                         <div class="card-content">
-                            <span class="card-title">{{post.question}}</span>
-                            <p>{{post.username}}</p>
+                            <span class="card-title" ng-bind="post.question"></span>
+                            <p ng-bind="post.username"></p>
                         </div>
                         <div class="row answer-row" ng-repeat="answer in post.answers" ng-show="post.showAnswers">
                             <div class="col s12 m12">
                                 <div class="card transparent">
                                     <div class="card-content">
-                                        <span class="card-title">{{answer}}</span>
+                                        <span class="card-title" ng-bind="answer"></span>
                                         <p>answerer</p>
                                     </div>
                                     <div class="card-action">
@@ -118,16 +118,31 @@
                             </div>
                         </div>
                         <div class="card-action" ng-show='!post.answering'>
-                            <a href="" class="teal-text btn-flat waves-effect" ng-click="switchView(post)">{{post.showBtnText}}</a>
+                            <a href="" class="teal-text btn-flat waves-effect" ng-click="switchView(post)" ng-bind="post.showBtnText"></a>
                             <a href="" class="teal-text btn-flat waves-effect" ng-click="openClose(post)">Answer</a>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Modal Structure -->
+        <div id="ask-question" class="modal">
+            <div class="modal-content">
+                <h5>Ask Question</h5>
+                <div class="input-field">
+                    <input ng-model="this.query" type="text" id="question-field"></input>
+                    <label for="question-field">Question</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="" ng-click="this.addQuestion()" class="modal-close waves-effect waves-green btn-flat">Ask</a>
+                <a href="" ng-click="this.cancel()" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
+            </div>
+        </div>
     </div>
 
     <!--JavaScript at end of body for optimized loading-->
-    <script type="text/javascript" src="js/materialize.min.js"></script>
+    <script type="text/javascript" src="../static/materialize.min.js"></script>
 </body>
 </html>
