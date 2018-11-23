@@ -133,9 +133,16 @@ def vote():
 @app.route('/getquestions', methods = ['GET'])
 def	getquestions():
 	global session
+	type= request.args.get('type')
 	username = session['username']
+	
+	if(type is None):
+		query={"username":username}
+	else:
+		query={}
+	
 	if(username):
-		doc =list(posts.find({"username":username}))
+		doc =list(posts.find(query))
 		docarr=[]
 		for i in doc :
 			docarr.append(i)
