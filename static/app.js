@@ -170,7 +170,7 @@ qaApp.controller('UserController', function UserController($scope,$http) {
     $scope.login = function() {
         $http.post('/login',{username:$scope.username,password:$scope.password}).then(function(response){
             if(response.data.message=="Success"){
-                window.open('/question',"__self");
+                window.open('/question',"_self");
             }
             else{
                 $scope.resp=response.data.comment;
@@ -184,7 +184,7 @@ qaApp.controller('UserController', function UserController($scope,$http) {
         e.preventDefault(); 
         $http.post('/register',{username:$scope.newuser.username,password:$scope.newuser.password,about:$scope.newuser.about}).then(function(response){
             if(response.data.message=="Success"){
-                window.open('/login',"__self");
+                window.open('/login',"_self");
             }
             else{
                 $scope.resp=response.data.comment;
