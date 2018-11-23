@@ -15,6 +15,9 @@
     color: black !important;
     cursor: text;
 }
+#search-bar:focus::placeholder, #search-bar:hover::placeholder {
+    color: black;
+}
 #prof-pic {
     max-height: 150px;
 }
