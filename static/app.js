@@ -149,10 +149,10 @@ qaApp.controller('ProfController', function ProfController($scope, $http) {
             if ($scope.quesitonView) {
                 post = $scope.userPosts.find(x => x._id == id);
             } else {
-                post = $scope.getUserAnsweredPosts.find(x => x._id == id);
+                post = $scope.answeredPosts.find(x => x._id == id);
             }
             if (post) {
-                post.answer[idx] = res.answer;
+                post.answers[idx] = res.answer;
             }
         });
     }
