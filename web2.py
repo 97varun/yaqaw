@@ -59,7 +59,7 @@ def add_user():
 
 @app.route('/getinfo', methods = ['POST'])
 def get_info():
-	username = session['username'];
+	username = session['username']
 	username = 'gb'
 	x = USERTABLE.find_one({'username':username})
 	about = x['about']
@@ -165,6 +165,10 @@ def search_query():
 		docarr.append(i)
 	return JSONEncoder().encode(docarr)
 	
+@app.route('/logout')
+def logout():
+	session['username'] = ''
+	return render_template('login.html')
 
 
 
