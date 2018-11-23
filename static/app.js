@@ -21,11 +21,8 @@ $(document).ready(function() {
         minLength: 0
     }
     $('input.autocomplete').autocomplete(autocompleteOptions);
-    $('.modal').modal();
-
-    $('.dropdown-trigger').on('click', function(event) {
-        event.stopPropagation();
-    });
+    $('#ask-question').modal();
+    $('#summary-modal').modal();
 });
 
 // angular app
@@ -104,6 +101,14 @@ qaApp.controller('QAController', function QAController($scope, $http) {
         $http.get('/getquestions?type=all').then(function(response) {
             var res = response.data;
             post.answers = res.find(x => x._id == post._id).answers;
+        });
+    }
+
+    $scope.summary = '';
+    $scope.showSummary = function(answer) {
+        $http.get('/getsummary?answer=' + answer).then(function(response) {
+            $scope.summary = response.data;
+            $('#summary-modal').modal('open');
         });
     }
 });
@@ -221,7 +226,7 @@ qaApp.controller('SearchController', function SearchController($scope, $http) {
         }
     }
     $scope.cancel = function() {
-        var m = $('.modal');
+        var m = $('#ask-question');
         m.modal('close');
     }
     
@@ -249,7 +254,7 @@ qaApp.controller('SearchController', function SearchController($scope, $http) {
         console.log(autocompleteData);
     }
     $scope.askQuestion = function() {
-        var m = $('.modal');
+        var m = $('#ask-question');
         m.modal('open');
         M.updateTextFields();
     }

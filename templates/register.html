@@ -68,29 +68,21 @@
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
-                      <i class="material-icons prefix pt-5">lock_outline</i>
-                      <input id="password" ng-model="newuser.password"  type="password">
-                      <label for="password" class="">Password</label>
+                        <i class="material-icons prefix pt-5">lock_outline</i>
+                        <input id="password" ng-model="newuser.password"  type="password">
+                        <label for="password" class="">Password</label>
                     </div>
 				</div>
 				<div class="row">
-						<div class="input-field col s12">
-						  <i class="material-icons prefix pt-5">lock_outline</i>
-						  <input id="cpassword" ng-model="newuser.cpass" ntype="password">
-						  <label for="cpassword" class="">Confirm password</label>
-						</div>
+                    <div class="input-field col s12">
+                        <i class="material-icons prefix pt-5">info_outline</i>
+                        <input id="about" ng-model="newuser.about" type="text"/>
+                        <label for="about" class="">About</label>
                     </div>
-                    
-				<div class="row">
-						<div class="input-field col s12">
-						  <i class="material-icons prefix pt-5">lock_outline</i>
-						  <input id="about" ng-model="newuser.about" type="text"/>
-						  <label for="About" class="">About</label>
-						</div>
-					</div>
+                </div>
                 <div class="row" style="padding-bottom: 4%;">
                     <div class="col s8" style="margin-left: 16%;">
-                        <button class="btn waves-effect waves-light col s12 submit-btn" ng-disabled="newuser.password==newuser.cpass">
+                        <button class="btn waves-effect waves-light col s12 submit-btn">
                             Register
                         </button>
                     </div>

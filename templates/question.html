@@ -81,6 +81,7 @@
                                     <a href="" ng-click="this.vote(post._id, answer[0], 1, $index)"><i class="material-icons green-text waves-effect waves-green">thumb_up</i></a>
                                     <span style="vertical-align: bottom; font-size: 18px;" ng-bind="answer[2].length - 1"></span>
                                     <a href="" ng-click="this.vote(post._id, answer[0], 0, $index)"><i class="material-icons red-text waves-effect waves-red">thumb_down</i></a>
+                                    <a href="" class="teal-text btn-flat waves-effect" ng-click="showSummary(answer[0])">summary</a>
                                 </div>
                             </div>
                         </div>
@@ -109,7 +110,16 @@
             </div>
         </div>
     </div>
+    <div id="summary-modal" class="modal">
+        <div class="modal-content">
+            <h4>tl;dr</h4>
+            <p ng-bind="this.summary"></p>
+        </div>
+        <div class="modal-footer">
+        </div>
     </div>
+    </div>
+    
     <!--JavaScript at end of body for optimized loading-->
     <script type="text/javascript" src="../static/materialize.min.js"></script>
 </body>
