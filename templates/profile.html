@@ -83,14 +83,14 @@
                     <div class="card">
                         <div class="card-content">
                             <span class="card-title" ng-bind="post.question"></span>
-                            <p ng-bind="post.username"></p>
+                            <p class="blue-text" ng-bind="post.username"></p>
                         </div>
                         <div class="row answer-row" ng-repeat="answer in post.answers" ng-show="post.showAnswers">
                             <div class="col s12 m12">
                                 <div class="card transparent">
                                     <div class="card-content">
                                         <span class="card-title" ng-bind="answer"></span>
-                                        <p>answerer</p>
+                                        <p class="blue-text">answerer</p>
                                     </div>
                                     <div class="card-action">
                                         <span style="vertical-align: bottom;">6</span>

@@ -36,7 +36,7 @@
                     </li>
                 </ul>
                 <div class="input-field">
-                    <input type="text" id="search-bar" class="blue-grey darken-2 white-text autocomplete" placeholder="Search">
+                    <input ng-model="this.query" ng-change="this.getQuery()" ng-keyup="$event.keyCode == 13 && this.askQuestion()" type="text" id="search-bar" class="blue-grey darken-2 white-text autocomplete" placeholder="Search">
                 </div>
             </div>
         </nav>
@@ -52,19 +52,19 @@
                 <div class="card">
                     <div class="card-content">
                         <span class="card-title" ng-bind="post.question"></span>
-                        <p ng-bind="post.username"></p>
+                        <p class="blue-text" ng-bind="post.username"></p>
                     </div>
                     <div class="row" ng-repeat="answer in post.answers" ng-show="post.showAnswers">
                         <div class="col s12 m12">
                             <div class="card transparent">
                                 <div class="card-content">
                                     <span class="card-title" ng-bind="answer"></span>
-                                    <p>answerer</p>
+                                    <p class="blue-text">answerer</p>
                                 </div>
                                 <div class="card-action">
-                                    <span style="vertical-align: bottom;">6</span>
+                                    <span style="vertical-align: bottom; font-size: 18px;">6</span>
                                     <a href=""><i class="material-icons green-text waves-effect waves-green">thumb_up</i></a>
-                                    <span style="vertical-align: bottom;">5</span>
+                                    <span style="vertical-align: bottom; font-size: 18px;">5</span>
                                     <a href=""><i class="material-icons red-text waves-effect waves-red">thumb_down</i></a>
                                 </div>
                             </div>
@@ -91,6 +91,20 @@
                         <a href="" class="teal-text btn-flat waves-effect" ng-click="openClose(post)">Answer</a>
                     </div>
                 </div>
+            </div>
+        </div>
+        <!-- Modal Structure -->
+        <div id="ask-question" class="modal">
+            <div class="modal-content">
+                <h5>Ask Question</h5>
+                <div class="input-field">
+                    <input ng-model="this.query" type="text" id="question-field"></input>
+                    <label for="question-field">Question</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="" ng-click="this.addQuestion()" class="modal-close waves-effect waves-green btn-flat">Ask</a>
+                <a href="" ng-click="this.cancel()" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
             </div>
         </div>
     </div>
