@@ -102,9 +102,9 @@ def add_answer():
 	answer = request.json['answer']
 	try :
 		posts.update({'question': question}, {'$push' : {'answers' : [answer,[''],[''],session['username']]}}, upsert=True)
-		return json_encoder.encode({"message":"Success"})
+		return json_encoder.encode({"status":"success"})
 	except :
-		return json_encoder.encode({"message":"Failure in add_answer"})
+		return json_encoder.encode({"status":"failed"})
 
 @app.route('/vote', methods = ['POST'])
 def vote():

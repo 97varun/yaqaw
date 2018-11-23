@@ -56,12 +56,12 @@ qaApp.controller('MainController', function MainController($scope, $http) {
     // submit answer to a question
     $scope.answerQuestion = function(post) {
         console.log(post.userAnswer);
-        var q = {'quesiton': post.userAnswer};
-        $http.post('/addquestion', q).then(function(response) {
+        var q = {'question': post.question, 'answer': post.userAnswer};
+        $http.post('/addanswer', q).then(function(response) {
             if (response.data.status === 'success') {
-                alert('question added successfully');
+                // alert('question added successfully');
             } else if (response.data.status === 'failed') {
-                alert('unable to add question. Try again later');
+                alert('unable to add answer. Try again later');
             } else {
                 alert('Not logged in. Please login');
             }
@@ -74,7 +74,6 @@ qaApp.controller('MainController', function MainController($scope, $http) {
         if (post.answering) {
             post.answering = false;
             post.userAnswer = '';
-            $('#answer-field').attr('rows', 0);
         } else {
             post.answering = true;
         }
@@ -97,6 +96,14 @@ qaApp.controller('QAController', function QAController($scope, $http) {
             var res = response.data;
             var post = $scope.posts.find(x => x._id == id);
             post.answers[idx] = res.answer;
+        });
+    }
+
+    $scope.answerQuestionWrapper = function(post) {
+        $scope.answerQuestion(post);
+        $http.get('/getquestions?type=all').then(function(response) {
+            var res = response.data;
+            post.answers = res.find(x => x._id == post._id).answers;
         });
     }
 });
@@ -145,9 +152,9 @@ qaApp.controller('ProfController', function ProfController($scope, $http) {
         var vote = {'id': id, 'answer': ans, 'vote': isUp ? 'upvote' : 'downvote'};
         $http.post('/vote', vote).then(function(response) {
             var res = response.data;
-            var post = undefined;
+            var post = null;
             if ($scope.quesitonView) {
-                post = $scope.userPosts.find(x => x._id == id);
+                post = $scope.posts.find(x => x._id == id);
             } else {
                 post = $scope.answeredPosts.find(x => x._id == id);
             }
@@ -156,7 +163,17 @@ qaApp.controller('ProfController', function ProfController($scope, $http) {
             }
         });
     }
+
+    $scope.answerQuestionWrapper = function(post) {
+        $scope.answerQuestion(post);
+        $http.get('/getquestions').then(function(response) {
+            var res = response.data;
+            post.answers = res.find(x => x._id == post._id).answers; 
+        });
+        $scope.getUserAnsweredPosts();
+    }
 });
+
 qaApp.controller('UserController', function UserController($scope,$http) {
     $scope.login = function() {
         $http.post('/login',{username:$scope.username,password:$scope.password}).then(function(response){
@@ -190,7 +207,7 @@ qaApp.controller('SearchController', function SearchController($scope, $http) {
         $http.post('/addquestion', question).then(function(response) {
             if (response.data.status === "success") {
                 alert('question added!');
-            } else if (response.data.status == "faliure") {
+            } else if (response.data.status == "failed") {
                 alert('error adding question');
             } else {
                 alert('you should be logged in to add a question');
