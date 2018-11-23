@@ -109,7 +109,7 @@ def add_answer():
 @app.route('/vote', methods = ['POST'])
 def vote():
 	answer = request.json['answer']
-	username = request.json['username']
+	username = session['username']
 	type_vote = request.json['vote']
 	# question = request.json['question']  'question' : question 
 	id_q = request.json['id'] 
