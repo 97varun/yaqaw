@@ -52,7 +52,7 @@ def check_user():
 	
 
 	if(doc.count()):
-		doc =list(doc)
+		doc =list(doc)[0]
 		if(doc['password'] == hashlib.md5(password.encode()).hexdigest()):
 			global session
 			session['username'] = username
