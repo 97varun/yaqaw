@@ -169,3 +169,34 @@ qaApp.controller('ProfController', function ProfController($scope) {
         }
     }
 });
+qaApp.controller('UserController', function UserController($scope,$http) {
+
+    $scope.login = function() {
+        $http.post('/login',{username:$scope.username,password:$scope.password}).then(function(response){
+            if(response.data.message=="Success"){
+                window.open('/question',"__self");
+            }
+            else{
+                $scope.resp=response.data.comment;
+                console.log("Failed shit",response.comment);
+                
+            }
+        });
+    }
+    
+    $scope.register = function(e) {
+        e.preventDefault(); 
+        $http.post('/register',{username:$scope.newuser.username,password:$scope.newuser.password,about:$scope.newuser.about}).then(function(response){
+            if(response.data.message=="Success"){
+                window.open('/login',"__self");
+            }
+            else{
+                $scope.resp=response.data.comment;
+                console.log("Failed shit",response.comment);
+                
+            }
+        });
+    }
+
+
+});

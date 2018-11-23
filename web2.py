@@ -34,19 +34,24 @@ def profile():
 
 @app.route('/login', methods=['GET'])
 def login():
-	return render_template('login.html')
+	if(request.method=="GET"):
+		return render_template('login.html')
+	#else:
+
 
 @app.route('/register', methods=['GET'])
 def register():
 	return render_template('register.html')
 
-@app.route('/checkuser', methods = ['POST'])
+@app.route('/login', methods = ['POST'])
 def check_user():
+	#return json_encoder.encode({"message":"Failure", "comment":"User not registered"})	
 	username = request.json['username']
 	password = request.json['password']
-	doc = USERTABLE.find_one({'username' : username})
-	print(doc)
-	if(doc):
+	doc = USERTABLE.find({'username' : username})
+	
+	if(doc.count()):
+		doc=list(doc)[0]
 		if(doc['password'] == hashlib.md5(password.encode()).hexdigest()):
 			global session
 			session['username'] = username
@@ -56,13 +61,14 @@ def check_user():
 	else:
 		return json_encoder.encode({"message":"Failure", "comment":"User not registered"})	
 
-@app.route('/adduser', methods = ['POST'])
+@app.route('/register', methods = ['POST'])
 def add_user():
 	username = request.json['username']
 	password = request.json['password']
 	about = request.json['about']
 	obj = {'username' : username, 'password' : hashlib.md5(password.encode()).hexdigest(), "about" : about}
 	USERTABLE.insert_one(obj)
+
 	return json_encoder.encode({"message":"Success"})
 
 @app.route('/getinfo', methods = ['POST'])
