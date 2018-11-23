@@ -1,18 +1,18 @@
-from flask import Flask, jsonify
-from flask import request, render_template
 import json
 import pickle
-from flask_cors import CORS
 import pymongo
-from pprint import pprint
 import hashlib
 from bson import ObjectId
+from pprint import pprint
+from flask_cors import CORS
+from mysummarizer import ExtractiveSummarizer
+from flask import Flask, jsonify, request, render_template
+
 app = Flask(__name__)
 json_decoder = json.JSONDecoder()
 json_encoder = json.JSONEncoder()
 my_client = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = my_client["webdb"]
-# my_client.drop_database('webdb')
 USERTABLE = mydb["USERTABLE"]
 posts = mydb["posts"]
 QanA = mydb['QandA']
@@ -50,8 +50,9 @@ def check_user():
 	password = request.json['password']
 	doc = USERTABLE.find({'username' : username})
 	
+
 	if(doc.count()):
-		doc=list(doc)[0]
+		doc =list(doc)
 		if(doc['password'] == hashlib.md5(password.encode()).hexdigest()):
 			global session
 			session['username'] = username
@@ -74,10 +75,8 @@ def add_user():
 @app.route('/getinfo', methods = ['POST'])
 def get_info():
 	username = session['username']
-	username = 'gb'
 	x = USERTABLE.find_one({'username':username})
 	about = x['about']
-	print(x)
 	try :
 		return json_encoder.encode({"username" : username,"about": about})
 	except :
@@ -87,10 +86,8 @@ def get_info():
 def add_question():
 	question = request.json['question']
 	global session
-	# session['username']="abc"
 	if(session['username']):	
 		username=session['username']
-
 		result = posts.insert({"question":question,"username":username})
 		if(result):
 			return json_encoder.encode({"status":"success"})
@@ -137,7 +134,6 @@ def vote():
 def	getquestions():
 	global session
 	username = session['username']
-	username="gb"
 	if(username):
 		doc =list(posts.find({"username":username}))
 		docarr=[]
@@ -151,17 +147,14 @@ def	getquestions():
 def	get_answers():
 	global session
 	username = session['username']
-	username="abc"
 	if(username):
 		docs =list(posts.find())
 		docarr=[]
-
 		for doc in docs:
 			ans = list(filter(lambda x: x[3] == username, doc['answers']))
 			if len(ans):
 				doc['answers'] = ans
 				docarr.append(doc)
-				
 		return JSONEncoder().encode(docarr)
 	else:
 		return json_encoder.encode({"error":"need to be logged in"})
@@ -170,7 +163,6 @@ def	get_answers():
 def search_query():
 	query = request.json['query']
 	results = posts.find({'$text': {'$search': query}}, {'score': {'$meta': 'textScore'}})
-	print(results)
 	docarr=[]
 	for i in results:
 		docarr.append(i)
@@ -180,6 +172,11 @@ def search_query():
 def logout():
 	session['username'] = ''
 	return render_template('login.html')
+
+@app.route('/getsummary', methods =['GET'])
+def summary():
+	text = request.args.get('answer')
+	return ExtractiveSummarizer().summarizer(text, sentence_count = 3)
 
 if __name__ == '__main__':
    app.run(debug = True)
