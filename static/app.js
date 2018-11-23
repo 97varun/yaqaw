@@ -170,7 +170,7 @@ qaApp.controller('UserController', function UserController($scope,$http) {
     $scope.login = function() {
         $http.post('/login',{username:$scope.username,password:$scope.password}).then(function(response){
             if(response.data.message=="Success"){
-                window.open('/question',"_self");
+                window.open('/questions',"_self");
             }
             else{
                 $scope.resp=response.data.comment;
