@@ -155,13 +155,17 @@ def	get_answers():
 	global session
 	username = session['username']
 	if(username):
-		docs =list(posts.find())
+		docs = list(posts.find({}))
 		docarr=[]
 		for doc in docs:
-			ans = list(filter(lambda x: x[3] == username, doc['answers']))
-			if len(ans):
-				doc['answers'] = ans
-				docarr.append(doc)
+			try:
+				ans = list(filter(lambda x: x[3] == username, doc['answers']))
+				if len(ans):
+					print(doc)
+					doc['answers'] = ans
+					docarr.append(doc)
+			except KeyError:
+				pass
 		return JSONEncoder().encode(docarr)
 	else:
 		return json_encoder.encode({"error":"need to be logged in"})
