@@ -32,8 +32,16 @@ def questions():
 def profile():
 	return render_template('profile.html')
 
-@app.route('/login', methods = ['POST'])
+@app.route('/login', methods=['GET'])
 def login():
+	return render_template('login.html')
+
+@app.route('/register', methods=['GET'])
+def register():
+	return render_template('register.html')
+
+@app.route('/checkuser', methods = ['POST'])
+def check_user():
 	username = request.json['username']
 	password = request.json['password']
 	doc = USERTABLE.find_one({'username' : username})
@@ -48,7 +56,7 @@ def login():
 	else:
 		return json_encoder.encode({"message":"Failure", "comment":"User not registered"})	
 
-@app.route('/register', methods = ['POST'])
+@app.route('/adduser', methods = ['POST'])
 def add_user():
 	username = request.json['username']
 	password = request.json['password']
@@ -68,7 +76,6 @@ def get_info():
 		return json_encoder.encode({"username" : username,"about": about})
 	except :
 		return json_encoder.encode({"username" : username,"about": about})
-
 
 @app.route('/addquestion', methods = ['POST'])		
 def add_question():
@@ -153,8 +160,6 @@ def	get_answers():
 	else:
 		return json_encoder.encode({"error":"need to be logged in"})
 
-
-
 @app.route('/search', methods = ['POST'])
 def search_query():
 	query = request.json['query']
@@ -169,8 +174,6 @@ def search_query():
 def logout():
 	session['username'] = ''
 	return render_template('login.html')
-
-
 
 if __name__ == '__main__':
    app.run(debug = True)
