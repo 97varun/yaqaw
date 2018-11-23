@@ -25,8 +25,9 @@
     </style>
 </head>
 <body class="layout-dark" ng-controller="MainController">
+    <div ng-controller="ProfController">
     <!-- nav bar -->
-    <div class="navbar-fixed">
+    <div class="navbar-fixed" ng-controller="SearchController">
         <nav>
             <div class="nav-wrapper blue-grey darken-4">
                 <a href="/questions" class="brand-logo">Quora</a>
@@ -42,15 +43,29 @@
                 </div>
             </div>
         </nav>
+        <!-- Modal Structure -->
+        <div id="ask-question" class="modal">
+            <div class="modal-content">
+                <h5>Ask Question</h5>
+                <div class="input-field">
+                    <input ng-model="this.query" type="text" id="question-field"></input>
+                    <label for="question-field">Question</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a href="" ng-click="this.addQuestion()" class="modal-close waves-effect waves-green btn-flat">Ask</a>
+                <a href="" ng-click="this.cancel()" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
+            </div>
+        </div>
     </div>
 
     <!-- dropdown menu -->
     <ul id='menu-dropdown' class='dropdown-content'>
-        <li><a href="">Logout</a></li>
+        <li><a href="/logout">Logout</a></li>
     </ul>
 
     <!-- profile info -->
-    <div class="row" ng-controller="ProfController">
+    <div class="row">
         <div id="profile-info" class="col s3">
             <div class="card">
                     <div class="card-img center">
@@ -90,12 +105,12 @@
                                 <div class="card transparent">
                                     <div class="card-content">
                                         <span class="card-title" ng-bind="answer"></span>
-                                        <p class="blue-text">answerer</p>
+                                        <p class="blue-text" ng-bind="answer[3]"></p>
                                     </div>
                                     <div class="card-action">
-                                        <span style="vertical-align: bottom;">6</span>
+                                        <span style="vertical-align: bottom;" ng-bind="answer[1].length"></span>
                                         <a href=""><i class="material-icons green-text waves-effect waves-green">thumb_up</i></a>
-                                        <span style="vertical-align: bottom;">5</span>
+                                        <span style="vertical-align: bottom;" ng-bind="answer[2].length"></span>
                                         <a href=""><i class="material-icons red-text waves-effect waves-red">thumb_down</i></a>
                                     </div>
                                 </div>
@@ -125,21 +140,7 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Modal Structure -->
-        <div id="ask-question" class="modal">
-            <div class="modal-content">
-                <h5>Ask Question</h5>
-                <div class="input-field">
-                    <input ng-model="this.query" type="text" id="question-field"></input>
-                    <label for="question-field">Question</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a href="" ng-click="this.addQuestion()" class="modal-close waves-effect waves-green btn-flat">Ask</a>
-                <a href="" ng-click="this.cancel()" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
-            </div>
-        </div>
+    </div>
     </div>
 
     <!--JavaScript at end of body for optimized loading-->

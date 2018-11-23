@@ -25,7 +25,7 @@ $(document).ready(function() {
 // angular app
 var qaApp = angular.module('qaApp', []);
 
-qaApp.controller('MainController', function MainController($scope) {
+qaApp.controller('MainController', function MainController($scope, $http) {
     // some initialisation.
     $scope.initPosts = function (posts, showAnswers=false, showBtnText='show answers') {
         posts.forEach(post => {
@@ -61,37 +61,9 @@ qaApp.controller('MainController', function MainController($scope) {
             post.answering = true;
         }
     }
-
-    $scope.query = '';
-    $scope.addQuestion = function() {
-        // http post
-        console.log('addQuestion: ', $scope.query);
-    }
-    $scope.cancel = function() {
-        var m = $('.modal');
-        m.modal('close');
-    }
-    
-    // submission throttling
-    $scope.timer = null;
-    $scope.getQuery = function() {
-        if ($scope.timer) {
-            clearTimeout($scope.timer);
-        }
-        $scope.timer = setTimeout($scope.sendQuery, 1000);
-    }
-    $scope.sendQuery = function() {
-        console.log('sendQuery:', $scope.query);
-        // $http.get();
-    }
-    $scope.askQuestion = function() {
-        var m = $('.modal');
-        m.modal('open');
-        M.updateTextFields();
-    }
 });
 
-qaApp.controller('QAController', function QAController($scope) {
+qaApp.controller('QAController', function QAController($scope, $http) {
     $scope.posts = [
         {
             _id: '1',
@@ -114,14 +86,32 @@ qaApp.controller('QAController', function QAController($scope) {
             ]
         },
     ];
+    $scope.fetchQuestions = function() {
+        $http.get('/getquestions').then(function(response) {
+            $scope.posts = resoponse.data;
+            console.log(response.data);
+        });
+    }
     $scope.initPosts($scope.posts);
 });
 
-qaApp.controller('ProfController', function ProfController($scope) {
+qaApp.controller('ProfController', function ProfController($scope, $http) {
+    $scope.getProfInfo = function() {
+        $http.get('/getinfo').then(function(response) {
+            $scope.profInfo = resoponse.data;
+            console.log(response.data);
+        });
+    }
     $scope.profInfo = {
         username: 'gb',
         about: 'About Me! I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.',
     };
+    $scope.getUserPosts = function() {
+        $http.get('/getquestions').then(function(response) {
+            $scope.posts = resoponse.data;
+            console.log(response.data);
+        });
+    }
     $scope.posts = [
         {
             _id: '1',
@@ -136,6 +126,12 @@ qaApp.controller('ProfController', function ProfController($scope) {
             answers: ["42", "43", "44"]
         }
     ];
+    $scope.getUserAnsweredPosts = function() {
+        $http.get('/getanswers').then(function(response) {
+            $scope.answeredPosts = response.data;
+            console.log(response.data);
+        });
+    }   
     $scope.answeredPosts = [
         {
             _id: '1',
@@ -199,4 +195,54 @@ qaApp.controller('UserController', function UserController($scope,$http) {
     }
 
 
+});
+
+qaApp.controller('SearchController', function SearchController($scope, $http) {
+    $scope.query = '';
+    $scope.addQuestion = function() {
+        var question = {'question': $scope.query};
+        $http.post('/addquestion', question).then(function(response) {
+            if (response.data.status === "success") {
+                alert('question added!');
+            } else if (response.data.status == "faliure") {
+                alert('error adding question');
+            } else {
+                alert('you should be logged in to add a question');
+            }
+        });
+        console.log('addQuestion: ', $scope.query);
+    }
+    $scope.cancel = function() {
+        var m = $('.modal');
+        m.modal('close');
+    }
+    
+    // submission throttling
+    $scope.timer = null;
+    $scope.getQuery = function() {
+        if ($scope.timer) {
+            clearTimeout($scope.timer);
+        }
+        $scope.timer = setTimeout($scope.sendQuery, 1000);
+    }
+    $scope.sendQuery = function() {
+        console.log('sendQuery:', $scope.query);
+        var search = {'query': $scope.query};
+        var ac = $('input.autocomplete');
+        // $http.post('/search', search).then(function(response) {
+        //     console.log(response.data);
+        //     var autocompleteData = response.data.map(x => {x.question: null});
+        //     ac.autocomplete('updateData', autocompleteData);
+        // });
+        var autocompleteData = {
+            'world': null,
+            'hello': null
+        };
+        ac.autocomplete('updateData', autocompleteData);
+    }
+    $scope.askQuestion = function() {
+        var m = $('.modal');
+        m.modal('open');
+        M.updateTextFields();
+    }
 });
