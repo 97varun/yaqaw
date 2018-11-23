@@ -72,7 +72,7 @@ def add_user():
 
 	return json_encoder.encode({"message":"Success"})
 
-@app.route('/getinfo', methods = ['POST'])
+@app.route('/getinfo', methods = ['GET'])
 def get_info():
 	username = session['username']
 	x = USERTABLE.find_one({'username':username})
@@ -82,7 +82,7 @@ def get_info():
 	except :
 		return json_encoder.encode({"username" : username,"about": about})
 
-@app.route('/addquestion', methods = ['POST'])		
+@app.route('/addquestion', methods = ['POST'])	
 def add_question():
 	question = request.json['question']
 	global session
@@ -113,7 +113,7 @@ def vote():
 	type_vote = request.json['vote']
 	# question = request.json['question']  'question' : question 
 	id_q = request.json['id'] 
-	x = posts.find_one({'_id' : id_q})
+	x = posts.find_one({'_id': ObjectId(id_q)})
 	idx = 0
 	for i in x['answers']:	
 		if(i[0] == answer):
@@ -127,8 +127,8 @@ def vote():
 	else:
 		if username not in y[2]:
 			y[2].append(username)
-	posts.update({'_id' : id_q}, {"$set" : {'answers.'+str(idx) : y}}, upsert=True)	
-	return json_encoder.encode({'upvote' : len(y[1])-1, 'downvote' : len(y[2])-1})		
+	posts.update({'_id' : ObjectId(id_q)}, {"$set" : {'answers.'+str(idx) : y}}, upsert=True)
+	return json_encoder.encode({'username' : username, 'type' : type_vote,'answer' : y})		
 
 @app.route('/getquestions', methods = ['GET'])
 def	getquestions():
@@ -170,6 +170,7 @@ def	get_answers():
 def search_query():
 	query = request.json['query']
 	results = posts.find({'$text': {'$search': query}}, {'score': {'$meta': 'textScore'}})
+	results.sort([('score', {'$meta': 'textScore'})])
 	docarr=[]
 	for i in results:
 		docarr.append(i)

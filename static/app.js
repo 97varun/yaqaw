@@ -3,8 +3,9 @@ $(document).ready(function() {
     // profile dropdown
     dropdownOptions = {
         alignment: 'right',
-        constrainWidth: false,
-        coverTrigger: false
+        constrainWidth: true,
+        coverTrigger: false,
+        autoTrigger: false
     };
     $('.dropdown-trigger').dropdown(dropdownOptions);
     $('.tabs').tabs();
@@ -16,10 +17,15 @@ $(document).ready(function() {
         },
         onAutocomplete: function (e) {
             console.log(e);
-        }
+        },
+        minLength: 0
     }
     $('input.autocomplete').autocomplete(autocompleteOptions);
     $('.modal').modal();
+
+    $('.dropdown-trigger').on('click', function(event) {
+        event.stopPropagation();
+    });
 });
 
 // angular app
@@ -28,12 +34,14 @@ var qaApp = angular.module('qaApp', []);
 qaApp.controller('MainController', function MainController($scope, $http) {
     // some initialisation.
     $scope.initPosts = function (posts, showAnswers=false, showBtnText='show answers') {
-        posts.forEach(post => {
-            post.showAnswers = showAnswers;
-            post.showBtnText = showBtnText;
-            post.answering = false;
-            post.userAnswer = '';
-        });
+        if (posts.length) {
+            posts.forEach(post => {
+                post.showAnswers = showAnswers;
+                post.showBtnText = showBtnText;
+                post.answering = false;
+                post.userAnswer = '';
+            });
+        }
     }
     // to show/hide answers
     $scope.switchView = function(post) {
@@ -48,6 +56,16 @@ qaApp.controller('MainController', function MainController($scope, $http) {
     // submit answer to a question
     $scope.answerQuestion = function(post) {
         console.log(post.userAnswer);
+        var q = {'quesiton': post.userAnswer};
+        $http.post('/addquestion', q).then(function(response) {
+            if (response.data.status === 'success') {
+                alert('question added successfully');
+            } else if (response.data.status === 'failed') {
+                alert('unable to add question. Try again later');
+            } else {
+                alert('Not logged in. Please login');
+            }
+        });
         post.answering = false;
         post.userAnswer = '';
     }
@@ -64,97 +82,56 @@ qaApp.controller('MainController', function MainController($scope, $http) {
 });
 
 qaApp.controller('QAController', function QAController($scope, $http) {
-    $scope.posts = [
-        {
-            _id: '1',
-            question: "Can the speed of a particle ever be negative? Give an example.",
-            username: "gb",
-            answers: [
-                "No. Speed is a scalar quantity and so is always positive. Hope you understood.", 
-                "answer2", 
-                "answer3"
-            ]
-        },
-        {
-            _id: '2',
-            question: "What is the answer to life, the universe and everything?",
-            username: "gb",
-            answers: [
-                "42", 
-                "43", 
-                "44"
-            ]
-        },
-    ];
     $scope.fetchQuestions = function() {
-        $http.get('/getquestions').then(function(response) {
-            $scope.posts = resoponse.data;
-            console.log(response.data);
+        $http.get('/getquestions?type=all').then(function(response) {
+            $scope.posts = response.data;
+            $scope.initPosts($scope.posts);
         });
     }
-    $scope.initPosts($scope.posts);
+    $scope.fetchQuestions();
+
+    // upvote/downvote
+    $scope.vote = function(id, ans, isUp, idx) {
+        var vote = {'id': id, 'answer': ans, 'vote': isUp ? 'upvote' : 'downvote'};
+        $http.post('/vote', vote).then(function(response) {
+            var res = response.data;
+            var post = $scope.posts.find(x => x._id == id);
+            post.answers[idx] = res.answer;
+        });
+    }
 });
 
 qaApp.controller('ProfController', function ProfController($scope, $http) {
     $scope.getProfInfo = function() {
         $http.get('/getinfo').then(function(response) {
-            $scope.profInfo = resoponse.data;
-            console.log(response.data);
+            $scope.profInfo = response.data;
         });
     }
-    $scope.profInfo = {
-        username: 'gb',
-        about: 'About Me! I am a very simple card. I am good at containing small bits of information. I am convenient because I require little markup to use effectively.',
-    };
+    $scope.getProfInfo();
+    
     $scope.getUserPosts = function() {
         $http.get('/getquestions').then(function(response) {
-            $scope.posts = resoponse.data;
-            console.log(response.data);
+            $scope.posts = response.data;
+            $scope.initPosts($scope.posts);
         });
     }
-    $scope.posts = [
-        {
-            _id: '1',
-            question: "Can the speed of a particle ever be negative? Give an example.",
-            username: "gb",
-            answers: ["No. Speed is a scalar quantity and so is always positive. Hope you understood.", "answer2", "answer3"]
-        },
-        {
-            _id: '2',
-            question: "What is the answer to life, the universe and everything?",
-            username: "gb",
-            answers: ["42", "43", "44"]
-        }
-    ];
+    $scope.getUserPosts();
+
     $scope.getUserAnsweredPosts = function() {
         $http.get('/getanswers').then(function(response) {
             $scope.answeredPosts = response.data;
-            console.log(response.data);
+            $scope.initPosts($scope.answeredPosts, true, 'collapse');
         });
-    }   
-    $scope.answeredPosts = [
-        {
-            _id: '1',
-            question: "Can the speed of a particle ever be negative? Give an example.",
-            username: "gb",
-            answers: ["No. Speed is a scalar quantity and so is always positive. Hope you understood."]
-        },
-        {
-            _id: '2',
-            question: "What is the answer to life, the universe and everything?",
-            username: "gb",
-            answers: ["42"]
-        }
-    ];
-    // some initialisation.
-    $scope.initPosts($scope.posts);
-    $scope.initPosts($scope.answeredPosts, true, 'collapse');
-
+    }
+    $scope.getUserAnsweredPosts();   
+    
     $scope.questionView = true;
     $scope.switchToQuestionView = function() {
+        $scope.getUserPosts();
         $scope.questionView = true;
     }
     $scope.switchToAnswerView = function() {
+        $scope.getUserAnsweredPosts();
         $scope.questionView = false;
     }
     $scope.getPosts = function() {
@@ -164,9 +141,23 @@ qaApp.controller('ProfController', function ProfController($scope, $http) {
             return $scope.answeredPosts;
         }
     }
+    $scope.vote = function(id, ans, isUp, idx) {
+        var vote = {'id': id, 'answer': ans, 'vote': isUp ? 'upvote' : 'downvote'};
+        $http.post('/vote', vote).then(function(response) {
+            var res = response.data;
+            var post = undefined;
+            if ($scope.quesitonView) {
+                post = $scope.userPosts.find(x => x._id == id);
+            } else {
+                post = $scope.getUserAnsweredPosts.find(x => x._id == id);
+            }
+            if (post) {
+                post.answer[idx] = res.answer;
+            }
+        });
+    }
 });
 qaApp.controller('UserController', function UserController($scope,$http) {
-
     $scope.login = function() {
         $http.post('/login',{username:$scope.username,password:$scope.password}).then(function(response){
             if(response.data.message=="Success"){
@@ -174,27 +165,22 @@ qaApp.controller('UserController', function UserController($scope,$http) {
             }
             else{
                 $scope.resp=response.data.comment;
-                console.log("Failed shit",response.comment);
-                
+                console.log("Failed",response.comment);
             }
         });
     }
-    
     $scope.register = function(e) {
-        e.preventDefault(); 
+        e.preventDefault();
         $http.post('/register',{username:$scope.newuser.username,password:$scope.newuser.password,about:$scope.newuser.about}).then(function(response){
             if(response.data.message=="Success"){
                 window.open('/login',"_self");
             }
             else{
                 $scope.resp=response.data.comment;
-                console.log("Failed shit",response.comment);
-                
+                console.log("Failed",response.comment);
             }
         });
     }
-
-
 });
 
 qaApp.controller('SearchController', function SearchController($scope, $http) {
@@ -210,7 +196,12 @@ qaApp.controller('SearchController', function SearchController($scope, $http) {
                 alert('you should be logged in to add a question');
             }
         });
-        console.log('addQuestion: ', $scope.query);
+        if ($scope.fetchQuestions) {
+            $scope.fetchQuestions();
+        } else {
+            $scope.getUserAnsweredPosts();
+            $scope.getUserPosts();
+        }
     }
     $scope.cancel = function() {
         var m = $('.modal');
@@ -229,16 +220,16 @@ qaApp.controller('SearchController', function SearchController($scope, $http) {
         console.log('sendQuery:', $scope.query);
         var search = {'query': $scope.query};
         var ac = $('input.autocomplete');
-        // $http.post('/search', search).then(function(response) {
-        //     console.log(response.data);
-        //     var autocompleteData = response.data.map(x => {x.question: null});
-        //     ac.autocomplete('updateData', autocompleteData);
-        // });
-        var autocompleteData = {
-            'world': null,
-            'hello': null
-        };
-        ac.autocomplete('updateData', autocompleteData);
+        var autocompleteData = {}
+        $http.post('/search', search).then(function(response) {
+            console.log(response.data);
+            response.data.forEach(function(x) {
+                autocompleteData[x.question] = null;
+            });
+            ac.autocomplete('updateData', autocompleteData);
+            ac.autocomplete('open');
+        });
+        console.log(autocompleteData);
     }
     $scope.askQuestion = function() {
         var m = $('.modal');

@@ -104,14 +104,14 @@
                             <div class="col s12 m12">
                                 <div class="card transparent">
                                     <div class="card-content">
-                                        <span class="card-title" ng-bind="answer"></span>
+                                        <span class="card-title" ng-bind="answer[0]"></span>
                                         <p class="blue-text" ng-bind="answer[3]"></p>
                                     </div>
                                     <div class="card-action">
-                                        <span style="vertical-align: bottom;" ng-bind="answer[1].length"></span>
-                                        <a href=""><i class="material-icons green-text waves-effect waves-green">thumb_up</i></a>
-                                        <span style="vertical-align: bottom;" ng-bind="answer[2].length"></span>
-                                        <a href=""><i class="material-icons red-text waves-effect waves-red">thumb_down</i></a>
+                                        <span style="vertical-align: bottom;" ng-bind="answer[1].length - 1"></span>
+                                        <a ng-click="this.vote(post._id, answer[0], 1, $index) href=""><i class="material-icons green-text waves-effect waves-green">thumb_up</i></a>
+                                        <span style="vertical-align: bottom;" ng-bind="answer[2].length - 1"></span>
+                                        <a ng-click="this.vote(post._id, answer[0], 0, $index)  href=""><i class="material-icons red-text waves-effect waves-red">thumb_down</i></a>
                                     </div>
                                 </div>
                             </div>
