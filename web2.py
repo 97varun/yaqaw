@@ -91,7 +91,6 @@ def add_answer():
 	question = request.json['question']
 	answer = request.json['answer']
 	try :
-		z = json_encoder.encode({'answer':answer})
 		posts.update({'question': question}, {'$push' : {'answers' : [answer,[''],[''],session['username']]}}, upsert=True)
 		return json_encoder.encode({"message":"Success"})
 	except :
@@ -150,16 +149,6 @@ def	get_answers():
 				doc['answers'] = ans
 				docarr.append(doc)
 				
-
-		# for i in doc :
-		# 	# print(i)
-
-		# 	for j in i['answers']:
-		# 		if(j[3] != username):
-		# 			docarr1.append(j)
-		# 	if(len(docarr1)):
-		# 		docarr.append([i['question'], docarr1])
-
 		return JSONEncoder().encode(docarr)
 	else:
 		return json_encoder.encode({"error":"need to be logged in"})
