@@ -52,20 +52,22 @@
                 <div class="row">
                     <div class="input-field col s12">
                       <i class="material-icons prefix pt-5">person_outline</i>
-                      <input id="username" type="text">
+                      <input ng-model="user.username" id="username" type="text">
                       <label for="username" class="center-align">Username</label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="input-field col s12">
                       <i class="material-icons prefix pt-5">lock_outline</i>
-                      <input id="password" type="password">
+                      <input ng-model="user.password" id="password" type="password">
                       <label for="password" class="">Password</label>
                     </div>
 				</div>
-                <div class="row">
-                    <div class="input-field col s12">
-                      <a href="#" class="btn waves-effect waves-light col s12">Login</a>
+                <div class="row" style="padding-bottom: 4%;">
+                    <div class="col s8" style="margin-left: 16%;">
+                        <button class="btn waves-effect waves-light col s12 submit-btn" type="submit" name="action">
+                            Login
+                        </button>
                     </div>
                 </div>
             </form>
