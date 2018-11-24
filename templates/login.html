@@ -65,8 +65,9 @@
                       <label for="password" class="">Password</label>
                     </div>
                 </div>
+                
                 <div class="card-panel" ng-if="this.resp" >
-                    <span  ng-bind="this.resp"></span> 
+                    <span  ng-bind="this.resp"></span><a ng-href="/register "  ng-if="this.link"> &nbsp;&nbsp;Click here to Register</a> 
                 </div>
                 <div class="row" style="padding-bottom: 4%;">
                     <div class="col s8" style="margin-left: 16%;">

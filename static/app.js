@@ -108,6 +108,7 @@ qaApp.controller('QAController', function QAController($scope, $http) {
     }
 
     $scope.showQuestion = function(question) {
+        console.log("OK");
         var reqPost = $scope.posts.filter(x => x.question == question);
         var restPost =  $scope.posts.filter(x => x.question != question);
         reqPost.push(...restPost);
@@ -188,6 +189,11 @@ qaApp.controller('UserController', function UserController($scope,$http) {
                 window.open('/questions',"_self");
             }
             else{
+               
+                console.log(response.data);
+                if(response.data.link){
+                    $scope.link=response.data.link;
+                }
                 $scope.resp=response.data.comment;
                 console.log("Failed", response.comment);
             }

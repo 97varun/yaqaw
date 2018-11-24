@@ -65,7 +65,7 @@ def check_user():
 		else:
 			return json_encoder.encode({"message":"Failure", "comment":"Username and password doesn't match"})
 	else:
-		return json_encoder.encode({"message":"Failure", "comment":"User not registered"})	
+		return json_encoder.encode({"message":"Failure", "comment":"User not registered","link":"/register"})	
 
 @app.route('/register', methods = ['POST'])
 def add_user():
