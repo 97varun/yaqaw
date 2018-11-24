@@ -38,25 +38,8 @@
                         </a>
                     </li>
                 </ul>
-                <div class="input-field">
-                    <input ng-model="this.query" ng-change="this.getQuery()" ng-keyup="$event.keyCode == 13 && this.askQuestion()" type="text" id="search-bar" class="blue-grey darken-2 white-text autocomplete" placeholder="Search">
-                </div>
             </div>
         </nav>
-        <!-- Modal Structure -->
-        <div id="ask-question" class="modal">
-            <div class="modal-content">
-                <h5>Ask Question</h5>
-                <div class="input-field">
-                    <input ng-model="this.query" type="text" id="question-field"></input>
-                    <label for="question-field">Question</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a href="" ng-click="this.addQuestion()" class="modal-close waves-effect waves-green btn-flat">Ask</a>
-                <a href="" ng-click="this.cancel()" class="modal-close waves-effect waves-red btn-flat">Cancel</a>
-            </div>
-        </div>
     </div>
 
     <!-- dropdown menu -->
