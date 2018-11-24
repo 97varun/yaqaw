@@ -196,7 +196,7 @@ def logout():
 @app.route('/getsummary', methods =['GET'])
 def summary():
 	text = request.args.get('answer')
-	return ExtractiveSummarizer().summarizer(text, sentence_count = 3)
+	return ExtractiveSummarizer().summarizer(text, sentence_count = 2)
 
 if __name__ == '__main__':
    app.run(debug = True)
