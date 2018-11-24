@@ -6,8 +6,8 @@ from bson import ObjectId
 from pprint import pprint
 from flask_cors import CORS
 from mysummarizer import ExtractiveSummarizer
-from flask import Flask, jsonify, request, render_template
-
+from flask import Flask, jsonify, request, render_template,redirect
+import random
 app = Flask(__name__)
 json_decoder = json.JSONDecoder()
 json_encoder = json.JSONEncoder()
@@ -26,10 +26,15 @@ class JSONEncoder(json.JSONEncoder):
 
 @app.route('/questions', methods=['GET'])
 def questions():
-   	return render_template('question.html')
+	if(not session['username']):
+		return redirect('/login')
+	return render_template('question.html')
 
 @app.route('/profile', methods=['GET'])
 def profile():
+	if(not session['username']):
+		return redirect('/login')
+	
 	return render_template('profile.html')
 
 @app.route('/login', methods=['GET'])
@@ -74,6 +79,8 @@ def add_user():
 
 @app.route('/getinfo', methods = ['GET'])
 def get_info():
+	if(not session['username']):
+		return redirect('/login');
 	username = session['username']
 	x = USERTABLE.find_one({'username':username})
 	about = x['about']
@@ -146,6 +153,7 @@ def	getquestions():
 		docarr=[]
 		for i in doc :
 			docarr.append(i)
+		random.shuffle(docarr)
 		return JSONEncoder().encode(docarr)
 	else:
 		return json_encoder.encode({"error":"need to be logged in"})

@@ -5,8 +5,8 @@ import pickle
 
 class ExtractiveSummarizer :
 	def __init__(self, corpus = "cnn", scoring = 'tf-idf') :
-		with open("cnn10000.pkl", "rb") as fp :
-			self.corpus = pickle.load(fp)
+		# with open("cnn10000.pkl", "rb") as fp :
+		# 	self.corpus = pickle.load(fp)
 
 		self.init_idf()
 		self.scoring = scoring
@@ -18,7 +18,8 @@ class ExtractiveSummarizer :
 			self.idf = pickle.load(fp)
 
 	def get_idf(self, word) :
-		N = len(self.corpus[0])
+		N = 10000
+		# N = len(self.corpus[0])
 		return self.idf.get(word, math.log(N, 10))
 
 	def get_sorted_indices(self, sentences) :
