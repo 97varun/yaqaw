@@ -9,20 +9,15 @@ $(document).ready(function() {
     };
     $('.dropdown-trigger').dropdown(dropdownOptions);
     $('.tabs').tabs();
-    autocompleteOptions = {
-        data: {
-            "Apple": null,
-            "Microsoft": null,
-            "Google": 'https://placehold.it/250x250'
-        },
-        onAutocomplete: function (e) {
-            console.log(e);
-        },
-        minLength: 0
-    }
-    $('input.autocomplete').autocomplete(autocompleteOptions);
     $('#ask-question').modal();
     $('#summary-modal').modal();
+
+    $('#search-bar').on('focus', function() {
+        $('.collection').slideDown();
+    });
+    $('#search-bar').on('blur', function() {
+        $('.collection').slideUp();
+    });
 });
 
 // angular app
@@ -111,6 +106,13 @@ qaApp.controller('QAController', function QAController($scope, $http) {
             $('#summary-modal').modal('open');
         });
     }
+
+    $scope.showQuestion = function(question) {
+        var reqPost = $scope.posts.filter(x => x.question == question);
+        var restPost =  $scope.posts.filter(x => x.question != question);
+        reqPost.push(...restPost);
+        $scope.posts = reqPost;
+    }
 });
 
 qaApp.controller('ProfController', function ProfController($scope, $http) {
@@ -187,7 +189,7 @@ qaApp.controller('UserController', function UserController($scope,$http) {
             }
             else{
                 $scope.resp=response.data.comment;
-                console.log("Failed",response.comment);
+                console.log("Failed", response.comment);
             }
         });
     }
@@ -199,7 +201,7 @@ qaApp.controller('UserController', function UserController($scope,$http) {
             }
             else{
                 $scope.resp=response.data.comment;
-                console.log("Failed",response.comment);
+                console.log("Failed", response.comment);
             }
         });
     }
@@ -241,17 +243,11 @@ qaApp.controller('SearchController', function SearchController($scope, $http) {
     $scope.sendQuery = function() {
         console.log('sendQuery:', $scope.query);
         var search = {'query': $scope.query};
-        var ac = $('input.autocomplete');
-        var autocompleteData = {}
+        $scope.autocompleteData = [];
         $http.post('/search', search).then(function(response) {
-            console.log(response.data);
-            response.data.forEach(function(x) {
-                autocompleteData[x.question] = null;
-            });
-            ac.autocomplete('updateData', autocompleteData);
-            ac.autocomplete('open');
+            $scope.autocompleteData = response.data.map(x => x.question);
+            console.log('sendQuery(response):', $scope.autocompleteData);
         });
-        console.log(autocompleteData);
     }
     $scope.askQuestion = function() {
         var m = $('#ask-question');

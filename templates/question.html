@@ -37,7 +37,10 @@
                     </li>
                 </ul>
                 <div class="input-field">
-                    <input ng-model="this.query" ng-change="this.getQuery()" ng-keyup="$event.keyCode == 13 && this.askQuestion()" type="text" id="search-bar" class="blue-grey darken-2 white-text autocomplete" placeholder="Search">
+                    <input ng-model="this.query" ng-change="this.getQuery()" ng-keyup="$event.keyCode == 13 && this.askQuestion()" type="text" id="search-bar" class="blue-grey darken-2 white-text" placeholder="Search">
+                </div>
+                <div class="collection" style="width: 41%; margin-left: 30%; position: fixed !important; top: 12.5%; display: none;">
+                    <a href="" class="collection-item" ng-repeat="data in autocompleteData" ng-bind="data" ng-click="this.showQuestion(data)"></a>
                 </div>
             </div>
         </nav>
